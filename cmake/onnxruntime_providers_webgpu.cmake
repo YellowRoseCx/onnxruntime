@@ -40,7 +40,6 @@
     onnxruntime_add_static_library(onnxruntime_providers_webgpu ${onnxruntime_providers_webgpu_cc_srcs})
     onnxruntime_add_include_to_target(onnxruntime_providers_webgpu
       onnxruntime_common onnx onnx_proto flatbuffers::flatbuffers Boost::mp11 safeint_interface)
-    add_dependencies(onnxruntime_providers_webgpu onnx ${onnxruntime_EXTERNAL_DEPENDENCIES})
     set_target_properties(onnxruntime_providers_webgpu PROPERTIES CXX_STANDARD_REQUIRED ON)
     set_target_properties(onnxruntime_providers_webgpu PROPERTIES FOLDER "ONNXRuntime")
   else()
@@ -60,6 +59,11 @@
                                                                     Boost::mp11
                                                                     safeint_interface)
     target_link_libraries(onnxruntime_providers_webgpu PRIVATE ${ABSEIL_LIBS})
+
+    # Add ONNX compiler definitions
+    add_definitions("-DONNX_ML=1")
+    add_definitions("-DONNX_NAMESPACE=onnx")
+    add_definitions("-DONNX_USE_LITE_PROTO=1")
 
     # Set preprocessor definitions used in onnxruntime_providers_webgpu.rc
     if(WIN32)
@@ -187,7 +191,7 @@
   endif()
 
   target_compile_features(onnxruntime_providers_webgpu PRIVATE cxx_std_20)
-  add_dependencies(onnxruntime_providers_webgpu ${onnxruntime_EXTERNAL_DEPENDENCIES})
+  add_dependencies(onnxruntime_providers_webgpu onnx ${onnxruntime_EXTERNAL_DEPENDENCIES})
 
   if (onnxruntime_WGSL_TEMPLATE)
     # Define the WGSL templates directory and output directory
